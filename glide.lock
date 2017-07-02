@@ -1,34 +1,34 @@
 hash: bdf5c0b43903ad8f1246f2cdfe547d87d5dcc3a4055c326109e5a2a40514e3e3
-updated: 2017-05-21T14:02:12.588698666+02:00
+updated: 2017-07-02T17:36:10.761797119+02:00
 imports:
 - name: cloud.google.com/go
-  version: 0625e1e4bfc1aa7a07d6285541fa9020feab1013
+  version: a5913b3f7deecba45e98ff33cefbac4fd204ddd7
   subpackages:
   - compute/metadata
 - name: github.com/aarondl/tpl
   version: e4905e745b4e2371caa002edf3ccdaf798ffd4b4
 - name: github.com/davecgh/go-spew
-  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  version: 782f4967f2dc4564575ca782fe2d04090b5faca8
   subpackages:
   - spew
 - name: github.com/go-sql-driver/mysql
-  version: 382e13d099fcf5f5994290892ab258fbebbdc5e3
+  version: 8fefef06da7707b5a3cda42195a6b409c9c9ab5c
 - name: github.com/golang/protobuf
-  version: fec3b39b059c0f88fa6b20f5ed012b1aa203a8b4
+  version: 6a1fa9404c0aebf36c879bc50152edcc953910d2
   subpackages:
   - proto
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: bcd8bc72b08df0f70df986b97f95590779502d31
+  version: 8c683ee571b6ee7ffc9f1cafd13103c422e71cbf
 - name: github.com/gorilla/schema
-  version: 1c72d033473165ade8a126ba64180d76a9212dcd
+  version: 8b1100835db5bbdae88541510f70d114b91a7e4d
 - name: github.com/gorilla/securecookie
   version: e59506cc896acb7f7bf732d4fdf5e25f7ccd8983
 - name: github.com/gorilla/sessions
   version: 8b6b4cd75f07f7ee036eb37b8127bd40ab1efc49
 - name: github.com/jinzhu/gorm
-  version: 9acaa33324bbcc78239a1c913d4f1292c12177b9
+  version: eae7f6be603af3190e032fe3c4d465ddaf6ea3d4
   subpackages:
   - dialects/mysql
 - name: github.com/jinzhu/inflection
@@ -42,7 +42,8 @@ imports:
 - name: github.com/oxtoacart/bpool
   version: 4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6
 - name: github.com/wellington/go-libsass
-  version: 710a976782a88718a45a597139f05225f43636ac
+  version: e4e2caac0b909f543121a9d2bfecdc55d88a7d08
+  repo: https://github.com/wellington/go-libsass
   subpackages:
   - libs
 - name: github.com/znly/go-sprockets
@@ -55,24 +56,25 @@ imports:
   - stringlist
   - types
 - name: golang.org/x/crypto
-  version: 0fe963104e9d1877082f8fb38f816fcd97eb1d10
+  version: 5ef0053f77724838734b6945dd364d3847e5de1d
   subpackages:
   - bcrypt
   - blowfish
 - name: golang.org/x/net
-  version: 513929065c19401a1c7b76ecd942f9f86a0c061b
+  version: e7da8edaa52631091740908acaf2c2d4c9b3ce90
+  repo: https://go.googlesource.com/net
   subpackages:
   - context
   - context/ctxhttp
 - name: golang.org/x/oauth2
-  version: f047394b6d14284165300fd82dad67edb3a4d7f6
+  version: cce311a261e6fcf29de72ca96827bdb0b7d9c9e6
   subpackages:
   - google
   - internal
   - jws
   - jwt
 - name: google.golang.org/appengine
-  version: 170382fa85b10b94728989dfcf6cc818b335c952
+  version: d11fc8a8dccf41ab5bd3c51a3ea52051240e325c
   subpackages:
   - internal
   - internal/app_identity
@@ -95,5 +97,6 @@ imports:
   - register
   - remember
 - name: gopkg.in/olebedev/go-duktape.v2
-  version: 7da705daddc2f0181fc46c9a5d192f8b4e116212
+  version: 55fa18c4e63070a925cf2090e699d4e6edd80949
+  repo: https://gopkg.in/olebedev/go-duktape.v2
 testImports: []

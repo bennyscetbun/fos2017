@@ -902,16 +902,9 @@ namespace Sass {
     BUILT_IN(sass_quote)
     {
       AST_Node* arg = env["$string"];
-      // only set quote mark to true if already a string
-      if (String_Quoted* qstr = dynamic_cast<String_Quoted*>(arg)) {
-        qstr->quote_mark('*');
-        return qstr;
-      }
-      // all other nodes must be converted to a string node
       std::string str(quote(arg->to_string(ctx.c_options), String_Constant::double_quote()));
       String_Quoted* result = SASS_MEMORY_NEW(ctx.mem, String_Quoted, pstate, str);
       result->is_delayed(true);
-      result->quote_mark('*');
       return result;
     }
 
@@ -1697,6 +1690,7 @@ namespace Sass {
         Sass_Output_Style old_style;
         old_style = ctx.c_options.output_style;
         ctx.c_options.output_style = TO_SASS;
+        Sass_Output_Options out(ctx.c_options);
         Emitter emitter(ctx.c_options);
         Inspect i(emitter);
         i.in_declaration = false;
@@ -1822,7 +1816,7 @@ namespace Sass {
             }
 
             // Cannot be a Universal selector
-            Type_Selector* pType = dynamic_cast<Type_Selector*>(childSeq->head()->first());
+            Type_Selector* pType = dynamic_cast<Type_Selector*>(base->head()->first());
             if(pType && pType->name() == "*") {
               std::string msg("Can't append  `");
               msg += childSeq->to_string();
@@ -1889,7 +1883,8 @@ namespace Sass {
       ExtensionSubsetMap subset_map;
       extender->populate_extends(extendee, ctx, subset_map);
 
-      Selector_List* result = Extend::extendSelectorList(selector, ctx, subset_map, false);
+      bool extendedSomething;
+      Selector_List* result = Extend::extendSelectorList(selector, ctx, subset_map, false, extendedSomething);
 
       Listize listize(ctx.mem);
       return result->perform(&listize);
@@ -1905,7 +1900,8 @@ namespace Sass {
       ExtensionSubsetMap subset_map;
       replacement->populate_extends(original, ctx, subset_map);
 
-      Selector_List* result = Extend::extendSelectorList(selector, ctx, subset_map, true);
+      bool extendedSomething;
+      Selector_List* result = Extend::extendSelectorList(selector, ctx, subset_map, true, extendedSomething);
 
       Listize listize(ctx.mem);
       return result->perform(&listize);

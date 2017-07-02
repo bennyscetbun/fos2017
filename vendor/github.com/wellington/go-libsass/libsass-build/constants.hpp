@@ -87,10 +87,11 @@ namespace Sass {
     extern const char odd_kwd[];
     extern const char progid_kwd[];
     extern const char expression_kwd[];
+    extern const char calc_kwd[];
     extern const char calc_fn_kwd[];
-
-    // char classes for "regular expressions"
-    extern const char almost_any_value_class[];
+    extern const char moz_calc_kwd[];
+    extern const char webkit_calc_kwd[];
+    extern const char ms_calc_kwd[];
 
     // css selector keywords
     extern const char sel_deep_kwd[];

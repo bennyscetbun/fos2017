@@ -13,20 +13,12 @@ namespace Sass {
   : ctx(ctx),
     block_stack(std::vector<Block*>()),
     p_stack(std::vector<Statement*>()),
-    s_stack(std::vector<Selector_List*>()),
     backtrace(bt)
-  {
-    s_stack.push_back(NULL);
-  }
+  {  }
 
   Statement* Cssize::parent()
   {
     return p_stack.size() ? p_stack.back() : block_stack.front();
-  }
-
-  Selector_List* Cssize::selector()
-  {
-    return s_stack.size() ? s_stack.back() : NULL;
   }
 
   Statement* Cssize::operator()(Block* b)
@@ -39,7 +31,7 @@ namespace Sass {
     return bb;
   }
 
-  Statement* Cssize::operator()(Directive* r)
+  Statement* Cssize::operator()(At_Rule* r)
   {
     if (!r->block() || !r->block()->length()) return r;
 
@@ -49,7 +41,7 @@ namespace Sass {
     }
 
     p_stack.push_back(r);
-    Directive* rr = SASS_MEMORY_NEW(ctx.mem, Directive,
+    At_Rule* rr = SASS_MEMORY_NEW(ctx.mem, At_Rule,
                                   r->pstate(),
                                   r->keyword(),
                                   r->selector(),
@@ -65,7 +57,7 @@ namespace Sass {
       else {
         s = static_cast<Bubble*>(s)->node();
         if (s->statement_type() != Statement::DIRECTIVE) directive_exists = false;
-        else directive_exists = (static_cast<Directive*>(s)->keyword() == rr->keyword());
+        else directive_exists = (static_cast<At_Rule*>(s)->keyword() == rr->keyword());
       }
 
     }
@@ -73,7 +65,7 @@ namespace Sass {
     Block* result = SASS_MEMORY_NEW(ctx.mem, Block, rr->pstate());
     if (!(directive_exists || rr->is_keyframes()))
     {
-      Directive* empty_node = static_cast<Directive*>(rr);
+      At_Rule* empty_node = static_cast<At_Rule*>(rr);
       empty_node->block(SASS_MEMORY_NEW(ctx.mem, Block, rr->block() ? rr->block()->pstate() : rr->pstate()));
       *result << empty_node;
     }
@@ -101,14 +93,11 @@ namespace Sass {
   Statement* Cssize::operator()(Ruleset* r)
   {
     p_stack.push_back(r);
-    s_stack.push_back(dynamic_cast<Selector_List*>(r->selector()));
     Ruleset* rr = SASS_MEMORY_NEW(ctx.mem, Ruleset,
                                   r->pstate(),
                                   r->selector(),
                                   r->block()->perform(this)->block());
-    rr->is_root(r->is_root());
     // rr->tabs(r->block()->tabs());
-    s_stack.pop_back();
     p_stack.pop_back();
 
     if (!rr->block()) {
@@ -224,7 +213,7 @@ namespace Sass {
     return bubble(m);
   }
 
-  Statement* Cssize::bubble(Directive* m)
+  Statement* Cssize::bubble(At_Rule* m)
   {
     Block* bb = SASS_MEMORY_NEW(ctx.mem, Block, this->parent()->pstate());
     Has_Block* new_rule = static_cast<Has_Block*>(shallow_copy(this->parent()));
@@ -238,7 +227,7 @@ namespace Sass {
 
     Block* wrapper_block = SASS_MEMORY_NEW(ctx.mem, Block, m->block() ? m->block()->pstate() : m->pstate());
     *wrapper_block << new_rule;
-    Directive* mm = SASS_MEMORY_NEW(ctx.mem, Directive,
+    At_Rule* mm = SASS_MEMORY_NEW(ctx.mem, At_Rule,
                                   m->pstate(),
                                   m->keyword(),
                                   m->selector(),
@@ -385,7 +374,7 @@ namespace Sass {
       case Statement::BUBBLE:
         return SASS_MEMORY_NEW(ctx.mem, Bubble, *static_cast<Bubble*>(s));
       case Statement::DIRECTIVE:
-        return SASS_MEMORY_NEW(ctx.mem, Directive, *static_cast<Directive*>(s));
+        return SASS_MEMORY_NEW(ctx.mem, At_Rule, *static_cast<At_Rule*>(s));
       case Statement::SUPPORTS:
         return SASS_MEMORY_NEW(ctx.mem, Supports_Block, *static_cast<Supports_Block*>(s));
       case Statement::ATROOT:

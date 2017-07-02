@@ -67,8 +67,7 @@ namespace Sass {
     // search for unicode char
     for(const char& chr : wbuf.buffer) {
       // skip all ascii chars
-      // static cast to unsigned to handle `char` being signed / unsigned
-      if (static_cast<unsigned>(chr) < 128) continue;
+      if (chr >= 0) continue;
       // declare the charset
       if (output_style() != COMPRESSED)
         charset = "@charset \"UTF-8\";"
@@ -310,7 +309,7 @@ namespace Sass {
     append_scope_closer();
   }
 
-  void Output::operator()(Directive* a)
+  void Output::operator()(At_Rule* a)
   {
     std::string      kwd   = a->keyword();
     Selector*   s     = a->selector();
