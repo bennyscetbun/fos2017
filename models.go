@@ -5,8 +5,8 @@ import "time"
 type TShirtSize int
 
 const (
-	_              = iota
-	TShirtSizeBoyS = TShirtSize(iota)
+	_                         = iota
+	TShirtSizeBoyS TShirtSize = iota
 	TShirtSizeBoyM
 	TShirtSizeBoyL
 	TShirtSizeBoyXL
@@ -23,8 +23,8 @@ const (
 type Regime int
 
 const (
-	_         = iota
-	RegimeAll = Regime(iota)
+	_                = iota
+	RegimeAll Regime = iota
 	RegimeVegetarian
 	RegimeVegan
 )
@@ -32,8 +32,8 @@ const (
 type EmergencyContactType int
 
 const (
-	_                       = iota
-	EmergencyContactTypeDad = EmergencyContactType(iota)
+	_                                            = iota
+	EmergencyContactTypeDad EmergencyContactType = iota
 	EmergencyContactTypeMum
 	EmergencyContactTypeFamilly
 	EmergencyContactTypePartner
@@ -53,8 +53,8 @@ type EmergencyContact struct {
 type EnglishLevel int
 
 const (
-	_                = iota
-	EnglishLevelNone = EnglishLevel(iota)
+	_                             = iota
+	EnglishLevelNone EnglishLevel = iota
 	EnglishLevelABit
 	EnglishLevelSchool
 	EnglishLevelGood
@@ -65,8 +65,8 @@ const (
 type JobsType int
 
 const (
-	_                      = iota
-	JobsTypeAcceuilArtiste = JobsType(iota)
+	_                               = iota
+	JobsTypeAcceuilArtiste JobsType = iota
 	JobsTypeAcceuilPublic
 	JobsTypeBackline
 	JobsTypeCaisse
@@ -98,8 +98,8 @@ const (
 type BoolOrEmpty uint8
 
 const (
-	_               = iota
-	BoolOrEmptyTrue = BoolOrEmpty(iota)
+	_                           = iota
+	BoolOrEmptyTrue BoolOrEmpty = iota
 	BoolOrEmptyFalse
 )
 
@@ -124,8 +124,8 @@ type UserInfo struct {
 	FirstAidTraining      BoolOrEmpty
 	EnglishLevel          EnglishLevel
 	OtherLanguage         string
-	AlreadyBeenBenevol    string
 	AlreadyBeenBenevolFOS string
+	AlreadyBeenBenevol    string
 	DidYouCameFOS         BoolOrEmpty
 	WhatYouWantToDo1      JobsType
 	WhatYouWantToDo2      JobsType
@@ -143,6 +143,9 @@ type UserInfo struct {
 	EmergencyContactTown        string
 	EmergencyContactPhoneNumber string
 	EmergencyContactType        EmergencyContactType
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type User struct {

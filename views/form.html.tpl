@@ -394,7 +394,7 @@
 				<div class="row is-table-row">
 					<div class="col-sm-6"  style="height: 100%">
 						<div class="control-label text-center"> Jobs Disponibles (à faire glisser dans la liste de choix) </div>
-						<ul id="whatyoucando" class="list-group"  style="background: Gray;height: 420px">
+						<ul id="whatyoucando" class="list-group"  style="background: Gray;height: 462px">
 							<li class="list-group-item text-center" value="1" >accueil artiste</li>
 							<li class="list-group-item text-center" value="2" >accueil public /contrôle d'accès</li>
 							<li class="list-group-item text-center" value="3" >backline / road</li>
@@ -410,7 +410,7 @@
 					</div>
   					<div class="col-sm-6" style="height: 100%">
 						<div class="control-label text-center"> Votre choix(dans l'ordre de preference, le plus important en haut) </div>
-						<ol id="whatyouchoosetodo" class="list-group" style="background: gray;height: 420px">
+						<ol id="whatyouchoosetodo" class="list-group" style="background: gray;height: 462px">
 						</ol>
 					</div>
 				</div>

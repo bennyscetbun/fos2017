@@ -54,6 +54,7 @@ var (
 	templates = tpl.Must(tpl.Load("views", "views/partials", "layout.html.tpl", funcs))
 	schemaDec = schema.NewDecoder()
 	db        *gorm.DB
+	serverURL = os.Getenv("SERVER_URL")
 )
 
 func setupAuthboss(database *DatabaseStorer) {
@@ -61,7 +62,7 @@ func setupAuthboss(database *DatabaseStorer) {
 	ab.OAuth2Storer = database
 	ab.MountPath = "/auth"
 	ab.ViewsPath = "ab_views"
-	ab.RootURL = os.Getenv("SERVER_URL")
+	ab.RootURL = serverURL
 
 	ab.LayoutDataMaker = layoutData
 
@@ -183,6 +184,7 @@ func main() {
 	gets.Handle("/form", authProtect(form))
 
 	gets.Handle("/admin", authProtect(admin))
+	gets.Handle("/admin/csv", authProtect(generateCSV))
 
 	gets.Handle("/setadmin123/{id}", authProtect(setadmin))
 
@@ -260,49 +262,6 @@ func index(w http.ResponseWriter, r *http.Request) {
 	mustRender(w, r, "index", data)
 }
 
-func admin(w http.ResponseWriter, r *http.Request) {
-	userInter, err := ab.CurrentUser(w, r)
-	if userInter != nil && err == nil {
-		user := userInter.(*User)
-		if user.IsAdmin == false {
-			w.Header().Set("Content-Type", "text/plain")
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-	}
-	data := make(map[string]interface{})
-	var usersinfo []UserInfo
-	if internalError(w, db.Find(&usersinfo).Error) {
-		return
-	}
-	data["usersinfo"] = usersinfo
-
-	mustRender(w, r, "admin", data)
-}
-
-func setadmin(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userInter, err := ab.CurrentUser(w, r)
-	if userInter != nil && err == nil {
-		user := userInter.(*User)
-		if user.IsAdmin == false {
-			w.Header().Set("Content-Type", "text/plain")
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-	}
-	var user User
-	if internalError(w, db.First(&user, "id = ?", vars["id"]).Error) {
-		return
-	}
-
-	user.IsAdmin = true
-	if internalError(w, db.Save(&user).Error) {
-		return
-	}
-	http.Redirect(w, r, "/", http.StatusFound)
-}
-
 func form(w http.ResponseWriter, r *http.Request) {
 	data := layoutData(w, r)
 	mustRender(w, r, "form", data)
@@ -324,6 +283,13 @@ func formPost(w http.ResponseWriter, r *http.Request) {
 	// TODO: Validation
 
 	var userinfo UserInfo
+	var olduserinfo UserInfo
+	if db.First(&olduserinfo, "id = ?", userInter.(*User).ID).Error == nil {
+		userinfo.CreatedAt = olduserinfo.CreatedAt
+		if userinfo.CreatedAt.Before(time.Date(2017, time.May, 01, 00, 00, 01, 00, time.UTC)) {
+			userinfo.CreatedAt = time.Now()
+		}
+	}
 	if badRequest(w, schemaDec.Decode(&userinfo, r.PostForm)) {
 		return
 	}
@@ -357,7 +323,7 @@ func formPost(w http.ResponseWriter, r *http.Request) {
 	userinfo.WhatYouWantToDo3 = TmpWhatYouWantToDo[2]
 	userinfo.WhatYouWantToDo4 = TmpWhatYouWantToDo[3]
 	userinfo.ID = userInter.(*User).ID
-	fmt.Println(userinfo)
+
 	if internalError(w, db.Save(&userinfo).Error) {
 		return
 	}
