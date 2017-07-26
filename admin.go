@@ -2,10 +2,9 @@ package main
 
 import (
 	"bytes"
-	"encoding/csv"
-	"encoding/hex"
 	"fmt"
 	"net/http"
+	"sort"
 
 	"time"
 
@@ -16,9 +15,9 @@ import (
 var bennyEpoch = time.Date(2017, 05, 01, 00, 00, 00, 00, time.UTC)
 
 var csvtab = []string{
-	"Email",
 	"Nom",
 	"Prenom",
+	"Email",
 	"Adresse",
 	"CP",
 	"Ville",
@@ -44,8 +43,8 @@ var csvtab = []string{
 	"Choix 3",
 	"Choix 4",
 	"Autre info Choix",
-	"Autre info",
-	"Photo",
+	//"Autre info",
+	//"Photo",
 	"Dimanche 3",
 	"Lundi 4",
 	"Mardi 5",
@@ -107,138 +106,6 @@ func setadmin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func generateCSV(w http.ResponseWriter, r *http.Request) {
-	userInter, err := ab.CurrentUser(w, r)
-	if userInter != nil && err == nil {
-		user := userInter.(*User)
-		if user.IsAdmin == false {
-			w.Header().Set("Content-Type", "text/plain")
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-	}
-	var usersinfo []UserInfo
-	if internalError(w, db.Find(&usersinfo).Error) {
-		return
-	}
-	var b bytes.Buffer
-	csvWriter := csv.NewWriter(&b)
-	csvWriter.Comma = ';'
-	if internalError(w, csvWriter.Write(csvtab)) {
-		return
-	}
-	for _, userinfo := range usersinfo {
-		toWrite := make([]string, 0, len(csvtab))
-		toWrite = append(toWrite, userinfo.ID)
-		toWrite = append(toWrite, userinfo.Lastname)
-		toWrite = append(toWrite, userinfo.Firstname)
-		toWrite = append(toWrite, userinfo.Address)
-		toWrite = append(toWrite, userinfo.CP)
-		toWrite = append(toWrite, userinfo.Town)
-		toWrite = append(toWrite, userinfo.HealthNumber)
-		toWrite = append(toWrite, userinfo.BirthDate.Format(dateFormat))
-		toWrite = append(toWrite, userinfo.BirthPlace)
-		toWrite = append(toWrite, userinfo.PhoneNumber)
-		if userinfo.Facebook != nil {
-			toWrite = append(toWrite, *userinfo.Facebook)
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		toWrite = append(toWrite, userinfo.TShirt.String())
-		toWrite = append(toWrite, userinfo.Regime.String())
-		toWrite = append(toWrite, userinfo.Allergy)
-		toWrite = append(toWrite, userinfo.MedicalInfo)
-		toWrite = append(toWrite, userinfo.DriverLicenceVL.String())
-		toWrite = append(toWrite, userinfo.DriverLicencePL.String())
-		toWrite = append(toWrite, userinfo.FirstAidTraining.String())
-		toWrite = append(toWrite, userinfo.EnglishLevel.String())
-		toWrite = append(toWrite, userinfo.OtherLanguage)
-		toWrite = append(toWrite, userinfo.AlreadyBeenBenevolFOS)
-		toWrite = append(toWrite, userinfo.AlreadyBeenBenevol)
-		toWrite = append(toWrite, userinfo.DidYouCameFOS.String())
-		toWrite = append(toWrite, userinfo.WhatYouWantToDo1.String())
-		toWrite = append(toWrite, userinfo.WhatYouWantToDo2.String())
-		toWrite = append(toWrite, userinfo.WhatYouWantToDo3.String())
-		toWrite = append(toWrite, userinfo.WhatYouWantToDo4.String())
-		toWrite = append(toWrite, userinfo.OtherJobs)
-		toWrite = append(toWrite, userinfo.OtherInfo)
-		toWrite = append(toWrite, fmt.Sprintf("%s/assets/%s.jpg", serverURL, hex.EncodeToString([]byte(userinfo.ID))))
-		if userinfo.WhenCanYouBeThere&DayThereSunday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereMonday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereTuesday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereWesnesday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereThursday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereFriday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereSaturday1 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereSunday2 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereMonday2 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereTuesday2 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.WhenCanYouBeThere&DayThereWesnesday2 != 0 {
-			toWrite = append(toWrite, "here")
-		} else {
-			toWrite = append(toWrite, "")
-		}
-		if userinfo.CreatedAt.Before(bennyEpoch) {
-			toWrite = append(toWrite, bennyEpoch.Format(dateFormat))
-		} else {
-			toWrite = append(toWrite, userinfo.CreatedAt.Format(dateFormat))
-		}
-		if userinfo.UpdatedAt.Before(bennyEpoch) {
-			toWrite = append(toWrite, bennyEpoch.Format(dateFormat))
-		} else {
-			toWrite = append(toWrite, userinfo.UpdatedAt.Format(dateFormat))
-		}
-		if internalError(w, csvWriter.Write(toWrite)) {
-			return
-		}
-	}
-	csvWriter.Flush()
-	w.Header().Set("Content-Type", "text/csv")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", time.Now().Format("benevole_database_2006-01-02")))
-	w.Write(b.Bytes())
-	return
-}
-
 func generateCSV2(w http.ResponseWriter, r *http.Request) {
 	userInter, err := ab.CurrentUser(w, r)
 	if userInter != nil && err == nil {
@@ -265,16 +132,19 @@ func generateCSV2(w http.ResponseWriter, r *http.Request) {
 			row.AddCell().SetValue(col)
 		}
 	}
+	sort.Slice(usersinfo, func(i, j int) bool {
+		return usersinfo[i].Lastname < usersinfo[j].Lastname
+	})
 	for _, userinfo := range usersinfo {
 		row := sheet.AddRow()
-		row.AddCell().SetValue(userinfo.ID)
 		row.AddCell().SetValue(userinfo.Lastname)
 		row.AddCell().SetValue(userinfo.Firstname)
+		row.AddCell().SetValue(userinfo.ID)
 		row.AddCell().SetValue(userinfo.Address)
 		row.AddCell().SetValue(userinfo.CP)
 		row.AddCell().SetValue(userinfo.Town)
 		row.AddCell().SetValue(userinfo.HealthNumber)
-		row.AddCell().SetValue(userinfo.BirthDate.Format(dateFormat))
+		row.AddCell().SetValue(userinfo.BirthDate)
 		row.AddCell().SetValue(userinfo.BirthPlace)
 		row.AddCell().SetValue(userinfo.PhoneNumber)
 		if userinfo.Facebook != nil {
@@ -299,8 +169,8 @@ func generateCSV2(w http.ResponseWriter, r *http.Request) {
 		row.AddCell().SetValue(userinfo.WhatYouWantToDo3.String())
 		row.AddCell().SetValue(userinfo.WhatYouWantToDo4.String())
 		row.AddCell().SetValue(userinfo.OtherJobs)
-		row.AddCell().SetValue(userinfo.OtherInfo)
-		row.AddCell().SetValue(fmt.Sprintf("%s/assets/%s.jpg", serverURL, hex.EncodeToString([]byte(userinfo.ID))))
+		//row.AddCell().SetValue(userinfo.OtherInfo)
+		//row.AddCell().SetValue(fmt.Sprintf("%s/assets/%s.jpg", serverURL, hex.EncodeToString([]byte(userinfo.ID))))
 		if userinfo.WhenCanYouBeThere&DayThereSunday1 != 0 {
 			row.AddCell().SetValue("here")
 		} else {
@@ -357,14 +227,14 @@ func generateCSV2(w http.ResponseWriter, r *http.Request) {
 			row.AddCell().SetValue("")
 		}
 		if userinfo.CreatedAt.Before(bennyEpoch) {
-			row.AddCell().SetValue(bennyEpoch.Format(dateFormat))
+			row.AddCell().SetValue(bennyEpoch)
 		} else {
-			row.AddCell().SetValue(userinfo.CreatedAt.Format(dateFormat))
+			row.AddCell().SetValue(userinfo.CreatedAt)
 		}
 		if userinfo.UpdatedAt.Before(bennyEpoch) {
-			row.AddCell().SetValue(bennyEpoch.Format(dateFormat))
+			row.AddCell().SetValue(bennyEpoch)
 		} else {
-			row.AddCell().SetValue(userinfo.UpdatedAt.Format(dateFormat))
+			row.AddCell().SetValue(userinfo.UpdatedAt)
 		}
 	}
 	if internalError(w, file.Write(&buf)) {

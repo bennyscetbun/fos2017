@@ -10,8 +10,8 @@
         <tbody>
             {{range .usersinfo}}
                 <tr>
-                    <td>{{.Firstname}}</td>
                     <td>{{.Lastname}}</td>
+                    <td>{{.Firstname}}</td>
                     <td>{{.ID}}</td>
                 </tr>
             {{end}}
