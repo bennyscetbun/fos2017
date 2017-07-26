@@ -106,7 +106,7 @@ func setadmin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func generateCSV2(w http.ResponseWriter, r *http.Request) {
+func generateCSV(w http.ResponseWriter, r *http.Request) {
 	userInter, err := ab.CurrentUser(w, r)
 	if userInter != nil && err == nil {
 		user := userInter.(*User)
