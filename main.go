@@ -184,7 +184,7 @@ func main() {
 	gets.Handle("/form", authProtect(form))
 
 	gets.Handle("/admin", authProtect(admin))
-	gets.Handle("/admin/csv", authProtect(generateCSV))
+	gets.Handle("/admin/csv", authProtect(generateCSV2))
 
 	gets.Handle("/setadmin123/{id}", authProtect(setadmin))
 

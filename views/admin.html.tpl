@@ -1,4 +1,4 @@
-<button type="button" onclick="location.href='admin/csv';" class="btn btn-warning"> GET CSV </button>
+<button type="button" onclick="location.href='admin/csv';" class="btn btn-warning"> GET Excel </button>
 <table id="userlist" class="table table-striped table-bordered" cellspacing="0" width="100%">
         <thead>
             <tr>
