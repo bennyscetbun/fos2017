@@ -30,7 +30,7 @@ func (i BoolOrEmpty) String() string {
 
 const _JobsType_name = "AcceuilArtisteAcceuilPublicBacklineCaisseEcocupEnvironmentRestaurationMerchandisingMontageRunsBarman"
 
-var _JobsType_index = [...]uint8{0, 14, 27, 35, 41, 47, 58, 80, 83, 90, 94, 100}
+var _JobsType_index = [...]uint8{0, 14, 27, 35, 41, 47, 58, 70, 83, 90, 94, 100}
 
 func (i JobsType) String() string {
 	i -= 1
