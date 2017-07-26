@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 
 	"time"
 
@@ -133,7 +134,7 @@ func generateCSV(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	sort.Slice(usersinfo, func(i, j int) bool {
-		return usersinfo[i].Lastname < usersinfo[j].Lastname
+		return strings.ToLower(usersinfo[i].Lastname) < strings.ToLower(usersinfo[j].Lastname)
 	})
 	for _, userinfo := range usersinfo {
 		row := sheet.AddRow()
