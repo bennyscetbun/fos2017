@@ -19,6 +19,7 @@
             {{end}}
         </tbody>
 </table>
+<button type="button" onclick="location.href='admin/allpdf';" class="btn btn-warning"> GET All PDF </button>
 <script>
     $(document).ready(function() {
     $('#userlist').DataTable(

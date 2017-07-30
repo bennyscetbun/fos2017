@@ -1,8 +1,10 @@
 package main
 
 import (
+	"archive/tar"
 	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"sort"
 	"strings"
@@ -273,21 +275,7 @@ func wordWrap(text string, lineWidth int) []string {
 
 }
 
-func generatePDF(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userInter, err := ab.CurrentUser(w, r)
-	if userInter != nil && err == nil {
-		user := userInter.(*User)
-		if user.IsAdmin == false {
-			w.Header().Set("Content-Type", "text/plain")
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-	}
-	var userInfo UserInfo
-	if internalError(w, db.First(&userInfo, "id = ?", vars["id"]).Error) {
-		return
-	}
+func makePDF(userInfo *UserInfo) ([]byte, error) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pageWidth, _ := pdf.GetPageSize()
 	tr := pdf.UnicodeTranslatorFromDescriptor("")
@@ -421,30 +409,79 @@ func generatePDF(w http.ResponseWriter, r *http.Request) {
 	y = writeUnderFct("Déjà Bénévole", userInfo.AlreadyBeenBenevol, y)
 
 	y = writeUnderFct("Info supplementaire", userInfo.OtherInfo, y)
-	//html.
-	/*
-		//
+	buf := &bytes.Buffer{}
+	if err := pdf.Output(buf); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
 
-		//
-		pdf.SetFont("Arial", "B", 12)
-
-		for _, str := range []string{"Nom", "Prenom", "Date de naissance"} {
-			pdf.CellFormat(40, 7, str, "1", 0, "", false, 0, "")
+func generateOnePDF(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userInter, err := ab.CurrentUser(w, r)
+	if userInter != nil && err == nil {
+		user := userInter.(*User)
+		if user.IsAdmin == false {
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusNotFound)
+			return
 		}
-		pdf.Ln(-1)
-		pdf.SetFont("Arial", "", 12)
-		pdf.CellFormat(40, 6, userInfo.Lastname, "1", 0, "", false, 0, "")
-		pdf.CellFormat(40, 6, userInfo.Firstname, "1", 0, "", false, 0, "")
-		pdf.CellFormat(40, 6, userInfo.BirthDate.Format("01-02-2006"), "1", 0, "", false, 0, "")
-		pdf.Ln(-1)
-
-	*/
-	buf := bytes.Buffer{}
-	if internalError(w, pdf.Output(&buf)) {
+	}
+	var userInfo UserInfo
+	if internalError(w, db.First(&userInfo, "id = ?", vars["id"]).Error) {
+		return
+	}
+	buf, err := makePDF(&userInfo)
+	if internalError(w, err) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/pdf")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_%s.pdf\"", userInfo.Lastname, userInfo.Firstname))
-	w.Write(buf.Bytes())
+	w.Write(buf)
 	//err := pdf.OutputFileAndClose("hello.pdf")
+}
+
+func generateAllPDF(w http.ResponseWriter, r *http.Request) {
+	userInter, err := ab.CurrentUser(w, r)
+	if userInter != nil && err == nil {
+		user := userInter.(*User)
+		if user.IsAdmin == false {
+			w.Header().Set("Content-Type", "text/plain")
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+	}
+	var usersinfo []UserInfo
+	if internalError(w, db.Find(&usersinfo).Error) {
+		return
+	}
+	buf := &bytes.Buffer{}
+	// Create a new tar archive.
+	tw := tar.NewWriter(buf)
+	for _, userInfo := range usersinfo {
+		buf, err := makePDF(&userInfo)
+		if internalError(w, err) {
+			return
+		}
+		hdr := &tar.Header{
+			Name: fmt.Sprintf("fiche_benevole/%s_%s.pdf", userInfo.Lastname, userInfo.Firstname),
+			Mode: 0600,
+			Size: int64(len(buf)),
+		}
+		if err := tw.WriteHeader(hdr); err != nil {
+			log.Fatalln(err)
+		}
+		if _, err := tw.Write(buf); internalError(w, err) {
+			return
+		}
+	}
+	if internalError(w, tw.Flush()) {
+		return
+	}
+	if internalError(w, tw.Close()) {
+		return
+	}
+	w.Header().Set("Content-Type", "application/x-tar")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.tar\"", time.Now().Format("fiche_benevole_database_2006-01-02")))
+	w.Write(buf.Bytes())
 }
