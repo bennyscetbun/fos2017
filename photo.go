@@ -15,6 +15,13 @@ import (
 	"github.com/nfnt/resize"
 )
 
+// return photo name and full path
+func localPhotoPath(userID string) (string, string) {
+	photoName := fmt.Sprintf("%s.jpg", hex.EncodeToString([]byte(userID)))
+	filep := filepath.Join(os.Getenv("PHOTO_PATH"), photoName)
+	return photoName, filep
+}
+
 func uploadPhoto(w http.ResponseWriter, r *http.Request) {
 	userInter, err := ab.CurrentUser(w, r)
 	if internalError(w, err) {
@@ -39,8 +46,7 @@ func uploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	m := resize.Resize(1000, 0, img, resize.Lanczos3)
-	photoName := fmt.Sprintf("%s.jpg", hex.EncodeToString([]byte(user.ID)))
-	filep := filepath.Join(os.Getenv("PHOTO_PATH"), photoName)
+	photoName, filep := localPhotoPath(user.ID)
 	f, err := os.OpenFile(filep, os.O_WRONLY|os.O_CREATE, 0666)
 	if internalError(w, err) {
 		return

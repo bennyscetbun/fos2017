@@ -5,6 +5,7 @@
                 <th>Nom</th>
                 <th>Prenom</th>
                 <th>Email</th>
+                <th> PDF </th>
             </tr>
         </thead>
         <tbody>
@@ -13,6 +14,7 @@
                     <td>{{.Lastname}}</td>
                     <td>{{.Firstname}}</td>
                     <td>{{.ID}}</td>
+                    <td><a href="admin/pdf/{{.ID}}">Get PDF</a></td>
                 </tr>
             {{end}}
         </tbody>

@@ -16,9 +16,9 @@ func (i TShirtSize) String() string {
 	return _TShirtSize_name[_TShirtSize_index[i]:_TShirtSize_index[i+1]]
 }
 
-const _BoolOrEmpty_name = "TrueFalse"
+const _BoolOrEmpty_name = "OuiNon"
 
-var _BoolOrEmpty_index = [...]uint8{0, 4, 9}
+var _BoolOrEmpty_index = [...]uint8{0, 3, 6}
 
 func (i BoolOrEmpty) String() string {
 	i -= 1
@@ -40,9 +40,9 @@ func (i JobsType) String() string {
 	return _JobsType_name[_JobsType_index[i]:_JobsType_index[i+1]]
 }
 
-const _EnglishLevel_name = "NoneABitSchoolGoodFluentBillangual"
+const _EnglishLevel_name = "NonUn peuScolaireBonFluentBilingue"
 
-var _EnglishLevel_index = [...]uint8{0, 4, 8, 14, 18, 24, 34}
+var _EnglishLevel_index = [...]uint8{0, 3, 9, 17, 20, 26, 34}
 
 func (i EnglishLevel) String() string {
 	i -= 1
@@ -64,9 +64,9 @@ func (i EmergencyContactType) String() string {
 	return _EmergencyContactType_name[_EmergencyContactType_index[i]:_EmergencyContactType_index[i+1]]
 }
 
-const _Regime_name = "AllVegetarianVegan"
+const _Regime_name = "ToutVegetarienVegan"
 
-var _Regime_index = [...]uint8{0, 3, 13, 18}
+var _Regime_index = [...]uint8{0, 4, 14, 19}
 
 func (i Regime) String() string {
 	i -= 1
