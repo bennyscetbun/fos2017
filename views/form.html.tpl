@@ -265,7 +265,7 @@
 				<label for="Allergy" class="control-label">Avez-vous des allergies graves. Si oui, lesquelles ?</label>
 				<input type="text" class="form-control" id="Allergy" name="Allergy" placeholder="Allergie" data-required-error="Veuillez remplir ce champ"
 				 {{if .userinfo.Allergy}} value={{.userinfo.Allergy}} {{end}}
-				 maxlength="1200"
+				 maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>
@@ -274,7 +274,7 @@
 				<label for="MedicalInfo" class="control-label">Informations médicales importantes</label>
 				<input type="text" class="form-control" id="MedicalInfo" name="MedicalInfo" placeholder="Information médicale" data-required-error="Veuillez remplir ce champ"
 				 {{if .userinfo.MedicalInfo}} value={{.userinfo.MedicalInfo}} {{end}}
-				 maxlength="1200"
+				 maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>
@@ -353,7 +353,7 @@
 				<label for="OtherLanguage" class="control-label">Quelle(s) autre(s) langue(s) parlez-vous?</label>
 				<input type="text" class="form-control" id="OtherLanguage" name="OtherLanguage" placeholder="espagnol/compris, finnois/courament, grunt/billingue"
 				 data-required-error="Veuillez remplir ce champ" {{if .userinfo.OtherLanguage}} value={{.userinfo.OtherLanguage}} {{end}}
-				 maxlength="1200"
+				 maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>
@@ -364,7 +364,7 @@
 				<input type="text" class="form-control" id="AlreadyBeenBenevolFOS" name="AlreadyBeenBenevolFOS" placeholder="Oui, l'année derniere, j'etais preposé biture au bar VIP. enfin je crois. c est assez flou comme week end."
 				 data-required-error="Veuillez remplir ce champ" {{if .userinfo.AlreadyBeenBenevolFOS}} value={{.userinfo.AlreadyBeenBenevolFOS}}
 				 {{end}}
-				 maxlength="2000"
+				 maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>
@@ -425,7 +425,7 @@
 				<label for="OtherJobs" class="control-label">Autre boulot ou information sur vos choix</label>
 				<input type="text" class="form-control" id="OtherJobs" name="OtherJobs" placeholder="Je peux faire reaccordeur de guitare?"
 				 data-required-error="Veuillez remplir ce champ" {{if .userinfo.OtherJobs}} value={{.userinfo.OtherJobs}} {{end}}
-				 maxlength="1200"
+				 maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>
@@ -477,7 +477,7 @@
 				<input type="text" class="form-control" id="AlreadyBeenBenevol" name="AlreadyBeenBenevol" placeholder="oui j'ai organisé une garden partie speciale grind et death dans mon jardin. J'ai tiré une rallonge et allumé le barbeuc."
 				 data-required-error="Veuillez remplir ce champ" {{if .userinfo.AlreadyBeenBenevol}} value={{.userinfo.AlreadyBeenBenevol}}
 				 {{end}}
-				 maxlength="1200"
+				 maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>
@@ -486,7 +486,7 @@
 				<label for="OtherInfo" class="control-label">Voulez vous rajouter quelque chose?</label>
 				<input type="text" class="form-control" id="OtherInfo" name="OtherInfo" placeholder="J'vous aime putain!" data-required-error="Veuillez remplir ce champ"
 				 {{if .userinfo.OtherInfo}} value={{.userinfo.OtherInfo}} {{end}}
-				  maxlength="1200"
+				  maxlength="255"
 				 >
 				<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
 				<div class="help-block with-errors"></div>

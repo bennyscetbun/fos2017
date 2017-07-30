@@ -117,23 +117,23 @@ type UserInfo struct {
 	Facebook              *string
 	TShirt                TShirtSize
 	Regime                Regime
-	Allergy               string
-	MedicalInfo           string
+	Allergy               string `gorm:"size:1400"`
+	MedicalInfo           string `gorm:"size:1400"`
 	DriverLicenceVL       BoolOrEmpty
 	DriverLicencePL       BoolOrEmpty
 	FirstAidTraining      BoolOrEmpty
 	EnglishLevel          EnglishLevel
-	OtherLanguage         string
-	AlreadyBeenBenevolFOS string
-	AlreadyBeenBenevol    string
+	OtherLanguage         string `gorm:"size:1400"`
+	AlreadyBeenBenevolFOS string `gorm:"size:1400"`
+	AlreadyBeenBenevol    string `gorm:"size:1400"`
 	DidYouCameFOS         BoolOrEmpty
 	WhatYouWantToDo1      JobsType
 	WhatYouWantToDo2      JobsType
 	WhatYouWantToDo3      JobsType
 	WhatYouWantToDo4      JobsType
-	OtherJobs             string
+	OtherJobs             string `gorm:"size:1400"`
 	WhenCanYouBeThere     DayThere
-	OtherInfo             string
+	OtherInfo             string `gorm:"size:1400"`
 	Photo                 string
 
 	EmergencyContactFirstname   string

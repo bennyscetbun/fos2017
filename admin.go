@@ -248,6 +248,31 @@ func generateCSV(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// wordWrap text at the specified column lineWidth on word breaks
+
+func wordWrap(text string, lineWidth int) []string {
+	words := strings.Fields(strings.TrimSpace(text))
+	if len(words) == 0 {
+		return []string{text}
+	}
+	ret := []string{}
+	wrapped := words[0]
+	spaceLeft := lineWidth - len(wrapped)
+	for _, word := range words[1:] {
+		if len(word)+1 > spaceLeft {
+			ret = append(ret, wrapped)
+			wrapped = word
+			spaceLeft = lineWidth - len(word)
+		} else {
+			wrapped += " " + word
+			spaceLeft -= 1 + len(word)
+		}
+	}
+	ret = append(ret, wrapped)
+	return ret
+
+}
+
 func generatePDF(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userInter, err := ab.CurrentUser(w, r)
@@ -275,39 +300,46 @@ func generatePDF(w http.ResponseWriter, r *http.Request) {
 	}
 	writeUnderFct := func(title string, text interface{}, y float64) float64 {
 		_, fontHeight := pdf.GetFontSize()
+		str := ""
 		if len(title) > 0 {
-			pdf.Text(10, y, tr(fmt.Sprintf("%s: %s", title, text)))
+			str = tr(fmt.Sprintf("%s: %s", title, text))
 		} else {
-			pdf.Text(10, y, tr(fmt.Sprintf("%s", text)))
+			str = tr(fmt.Sprintf("%s", text))
 		}
-		return fontHeight + y + 2
+		for _, line := range wordWrap(str, 160) {
+			pdf.Text(10, y, line)
+			y += fontHeight + 1
+		}
+
+		return y + 1
 	}
 
 	header := func() float64 {
+		const imageSize = 50
 		pdf.AddPage()
 		_, photoPath := localPhotoPath(userInfo.ID)
 		pdf.RegisterImageOptions(photoPath, gofpdf.ImageOptions{})
 		imgInfo := pdf.GetImageInfo(photoPath)
 		if imgInfo.Height() > imgInfo.Width() {
-			pdf.Image(photoPath, 10, 6, 0, 30, false, "", 0, "")
+			pdf.Image(photoPath, 10, 6, 0, imageSize, false, "", 0, "")
 		} else {
-			pdf.Image(photoPath, 10, 6, 30, 0, false, "", 0, "")
+			pdf.Image(photoPath, 10, 6, imageSize, 0, false, "", 0, "")
 		}
 
 		pdf.SetFont("Arial", "B", 15)
 
-		y := 18.0
-		y = centerTextFct(fmt.Sprintf("%s %s", userInfo.Lastname, userInfo.Firstname), y, 40)
-		pdf.SetFont("Arial", "", 13)
+		y := (imageSize + 6) * 0.5
+		y = centerTextFct(fmt.Sprintf("%s %s", userInfo.Lastname, userInfo.Firstname), y, imageSize+10)
+		pdf.SetFont("Arial", "", 12)
 		y += 3
-		y = centerTextFct(fmt.Sprintf("Tel: %s", userInfo.PhoneNumber), y, 40)
-		return 40 + 4
+		y = centerTextFct(fmt.Sprintf("Tel: %s", userInfo.PhoneNumber), y, imageSize+10)
+		return 10 + imageSize + 4
 	}
 
 	presence := func(y float64) float64 {
-		pdf.SetFont("Arial", "B", 13)
+		pdf.SetFont("Arial", "B", 8)
 		y = writeUnderFct("Presence", "", y)
-		pdf.SetFont("Arial", "", 12)
+		pdf.SetFont("Arial", "", 7)
 		_, fontHeight := pdf.GetFontSize()
 		x := 10.0
 		for i, date := range []string{
@@ -327,7 +359,7 @@ func generatePDF(w http.ResponseWriter, r *http.Request) {
 
 			if i == 5 || i == 7 {
 				x = 10.0
-				y += (fontHeight+2)*2 + 5
+				y += (fontHeight+2)*2 + 1
 			}
 			pdf.SetXY(x, y)
 			pdf.CellFormat(30, fontHeight+2, date, "1", 0, "CM", false, 0, "")
@@ -343,43 +375,52 @@ func generatePDF(w http.ResponseWriter, r *http.Request) {
 	}
 
 	y := header()
-	pdf.SetFont("Arial", "B", 13)
+	pdf.SetFont("Arial", "B", 8)
 	y = writeUnderFct("Etat Civil", "", y)
-	pdf.SetFont("Arial", "", 12)
-	y = writeUnderFct("Date de naissance/lieu de naissance", fmt.Sprintf("%s/%s", userInfo.BirthDate.Format("02-01-2006"), userInfo.BirthPlace), y)
+	pdf.SetFont("Arial", "", 7)
+	y = writeUnderFct("Date/lieu de naissance", fmt.Sprintf("%s/%s", userInfo.BirthDate.Format("02-01-2006"), userInfo.BirthPlace), y)
 	y = writeUnderFct("Numero Secu", userInfo.HealthNumber, y)
 	y = writeUnderFct("Adresse", fmt.Sprintf("%s %s %s", userInfo.Address, userInfo.CP, userInfo.Town), y)
-	y = writeUnderFct("email", userInfo.ID, y)
+	y = writeUnderFct("Email", userInfo.ID, y)
 	y = writeUnderFct("Tshirt", userInfo.TShirt, y)
 	y += 5
-	pdf.SetFont("Arial", "B", 13)
-	y = writeUnderFct("Competence", "", y)
-	pdf.SetFont("Arial", "", 12)
-	y = writeUnderFct("Permis VL", userInfo.DriverLicenceVL, y)
-	y = writeUnderFct("Permis PL", userInfo.DriverLicencePL, y)
-	y = writeUnderFct("Premier Secours", userInfo.FirstAidTraining, y)
-	y = writeUnderFct("Anglais", userInfo.EnglishLevel, y)
-
+	pdf.SetFont("Arial", "B", 8)
+	y = writeUnderFct("Compétence", "", y)
+	pdf.SetFont("Arial", "", 7)
+	y = writeUnderFct("", fmt.Sprintf("Permis VL: %s / Permis PL: %s / Premier Secours: %s / Anglais: %s", userInfo.DriverLicenceVL, userInfo.DriverLicencePL, userInfo.FirstAidTraining, userInfo.EnglishLevel), y)
 	y = writeUnderFct("Autres langues parlées", userInfo.OtherLanguage, y)
 
 	y += 5
 	y = presence(y)
 	y += 5
-	pdf.SetFont("Arial", "B", 13)
-	y = writeUnderFct("Contact D urgence", "", y)
-	pdf.SetFont("Arial", "", 12)
+	pdf.SetFont("Arial", "B", 8)
+	y = writeUnderFct("Contact d'urgence", "", y)
+	pdf.SetFont("Arial", "", 7)
 	y = writeUnderFct("Lien", userInfo.EmergencyContactType, y)
 	y = writeUnderFct("Nom", userInfo.EmergencyContactLastname, y)
-	y = writeUnderFct("Prenom", userInfo.EmergencyContactFirstname, y)
+	y = writeUnderFct("Prénom", userInfo.EmergencyContactFirstname, y)
 	y = writeUnderFct("Tel", userInfo.EmergencyContactPhoneNumber, y)
 	y = writeUnderFct("Adresse", fmt.Sprintf("%s %s %s", userInfo.EmergencyContactAddress, userInfo.EmergencyContactCP, userInfo.EmergencyContactTown), y)
 	y += 5
-	pdf.SetFont("Arial", "B", 13)
-	y = writeUnderFct("Info Medicale", "", y)
-	pdf.SetFont("Arial", "", 12)
+	pdf.SetFont("Arial", "B", 8)
+	y = writeUnderFct("Santé", "", y)
+	pdf.SetFont("Arial", "", 7)
+	y = writeUnderFct("Information médicales", userInfo.MedicalInfo, y)
 	y = writeUnderFct("Allergies", userInfo.Allergy, y)
-	y = writeUnderFct("Regime alimentaire", userInfo.Regime, y)
+	y = writeUnderFct("Régime alimentaire", userInfo.Regime, y)
+	y += 5
+	pdf.SetFont("Arial", "B", 8)
+	y = writeUnderFct("Autres infos", "", y)
+	pdf.SetFont("Arial", "", 7)
+	y = writeUnderFct("Choix Job", fmt.Sprintf("%s,%s,%s,%s", userInfo.WhatYouWantToDo1, userInfo.WhatYouWantToDo2, userInfo.WhatYouWantToDo3, userInfo.WhatYouWantToDo4), y)
 
+	y = writeUnderFct("Choix info", userInfo.OtherJobs, y)
+
+	y = writeUnderFct("Déjà venu au FOS", userInfo.DidYouCameFOS, y)
+	y = writeUnderFct("Déjà Bénévole au FOS", userInfo.AlreadyBeenBenevolFOS, y)
+	y = writeUnderFct("Déjà Bénévole", userInfo.AlreadyBeenBenevol, y)
+
+	y = writeUnderFct("Info supplementaire", userInfo.OtherInfo, y)
 	//html.
 	/*
 		//
@@ -403,7 +444,7 @@ func generatePDF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/pdf")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_%s.pdf\"", userInfo.Firstname, userInfo.Lastname))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_%s.pdf\"", userInfo.Lastname, userInfo.Firstname))
 	w.Write(buf.Bytes())
 	//err := pdf.OutputFileAndClose("hello.pdf")
 }
