@@ -88,8 +88,10 @@ namespace Sass {
     extern const char progid_kwd[]       = "progid";
     extern const char expression_kwd[]   = "expression";
     extern const char calc_fn_kwd[]      = "calc";
-
-    extern const char almost_any_value_class[] = "\"'#!;{}";
+    extern const char calc_kwd[]         = "calc(";
+    extern const char moz_calc_kwd[]     = "-moz-calc(";
+    extern const char webkit_calc_kwd[]  = "-webkit-calc(";
+    extern const char ms_calc_kwd[]      = "-ms-calc(";
 
     // css selector keywords
     extern const char sel_deep_kwd[] = "/deep/";

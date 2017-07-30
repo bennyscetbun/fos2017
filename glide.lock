@@ -1,8 +1,8 @@
 hash: bdf5c0b43903ad8f1246f2cdfe547d87d5dcc3a4055c326109e5a2a40514e3e3
-updated: 2017-07-26T23:50:14.177225015+02:00
+updated: 2017-07-30T13:22:02.274513404+02:00
 imports:
 - name: cloud.google.com/go
-  version: ef305dafe1fb55d8ee5fb61dd1e7b8f6a7d691e8
+  version: 7a4ba9f439fbc50061834a4063b57cf7222ba83f
   subpackages:
   - compute/metadata
 - name: github.com/aarondl/tpl
@@ -33,6 +33,8 @@ imports:
   - dialects/mysql
 - name: github.com/jinzhu/inflection
   version: 1c35d901db3da928c72a72d8458480cc9ade058f
+- name: github.com/jung-kurt/gofpdf
+  version: e79bdb537c4e4e719b91d5f35afa9f54976e0d4d
 - name: github.com/justinas/alice
   version: 1051eaf52fcafdd87ead59d28b065f1fcb8274ec
 - name: github.com/justinas/nosurf
@@ -42,9 +44,10 @@ imports:
 - name: github.com/oxtoacart/bpool
   version: 4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6
 - name: github.com/tealeg/xlsx
-  version: 590f88edeb3f0fbf92f018f4b43daa01201f310e
+  version: 213bccdca3ebca16656be44dd663b8b52c00a954
 - name: github.com/wellington/go-libsass
-  version: 70e55d4c8433334142a94120c8b3fbccd0a0af25
+  version: e4e2caac0b909f543121a9d2bfecdc55d88a7d08
+  repo: https://github.com/wellington/go-libsass
   subpackages:
   - libs
 - name: github.com/znly/go-sprockets
@@ -57,12 +60,13 @@ imports:
   - stringlist
   - types
 - name: golang.org/x/crypto
-  version: 2faea1465de239e4babd8f5905cc25b781712442
+  version: 558b6879de74bc843225cde5686419267ff707ca
   subpackages:
   - bcrypt
   - blowfish
 - name: golang.org/x/net
-  version: f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f
+  version: e7da8edaa52631091740908acaf2c2d4c9b3ce90
+  repo: https://go.googlesource.com/net
   subpackages:
   - context
   - context/ctxhttp
@@ -97,5 +101,6 @@ imports:
   - register
   - remember
 - name: gopkg.in/olebedev/go-duktape.v2
-  version: 7da705daddc2f0181fc46c9a5d192f8b4e116212
+  version: 55fa18c4e63070a925cf2090e699d4e6edd80949
+  repo: https://gopkg.in/olebedev/go-duktape.v2
 testImports: []

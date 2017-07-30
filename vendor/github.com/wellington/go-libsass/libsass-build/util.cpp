@@ -12,6 +12,11 @@
 
 namespace Sass {
 
+  #define out_of_memory() do {            \
+      std::cerr << "Out of memory.\n";    \
+      exit(EXIT_FAILURE);                 \
+    } while (0)
+
   double round(double val, size_t precision)
   {
     // https://github.com/sass/sass/commit/4e3e1d5684cc29073a507578fc977434ff488c93
@@ -21,6 +26,16 @@ namespace Sass {
     // cygwin has it not defined in std
     using namespace std;
     return ::round(val);
+  }
+
+  /* Sadly, sass_strdup is not portable. */
+  char *sass_strdup(const char *str)
+  {
+    char *ret = (char*) malloc(strlen(str) + 1);
+    if (ret == NULL)
+      out_of_memory();
+    strcpy(ret, str);
+    return ret;
   }
 
   /* Locale unspecific atof function. */
@@ -35,7 +50,7 @@ namespace Sass {
       if(found != NULL){
         // substitution is required. perform the substitution on a copy
         // of the string. This is slower but it is thread safe.
-        char *copy = sass_copy_c_string(str);
+        char *copy = sass_strdup(str);
         *(copy + (found - str)) = separator;
         double res = atof(copy);
         free(copy);
@@ -103,10 +118,7 @@ namespace Sass {
       }
       out.push_back(i);
     }
-    // happens when parsing does not correctly skip
-    // over escaped sequences for ie. interpolations
-    // one example: foo\#{interpolate}
-    // if (esc) out += '\\';
+    if (esc) out += '\\';
     return out;
   }
 
@@ -461,7 +473,7 @@ namespace Sass {
       bool hasPrintableChildBlocks = false;
       for (size_t i = 0, L = b->length(); i < L; ++i) {
         Statement* stm = (*b)[i];
-        if (dynamic_cast<Directive*>(stm)) {
+        if (dynamic_cast<At_Rule*>(stm)) {
           return true;
         } else if (dynamic_cast<Has_Block*>(stm)) {
           Block* pChildBlock = ((Has_Block*)stm)->block();
@@ -528,7 +540,7 @@ namespace Sass {
           // is NULL, then that means there was never a wrapping selector and it is printable (think of a top level media block with
           // a declaration in it).
         }
-        else if (typeid(*stm) == typeid(Declaration) || typeid(*stm) == typeid(Directive)) {
+        else if (typeid(*stm) == typeid(Declaration) || typeid(*stm) == typeid(At_Rule)) {
           hasDeclarations = true;
         }
         else if (dynamic_cast<Has_Block*>(stm)) {
@@ -553,52 +565,14 @@ namespace Sass {
       if (b == 0) return false;
       for (size_t i = 0, L = b->length(); i < L; ++i) {
         Statement* stm = (*b)[i];
-        if (typeid(*stm) == typeid(Directive)) return true;
-        else if (typeid(*stm) == typeid(Declaration)) return true;
-        else if (typeid(*stm) == typeid(Comment)) {
-          Comment* c = (Comment*) stm;
-          if (isPrintable(c, style)) {
-            return true;
-          }
-        }
-        else if (typeid(*stm) == typeid(Ruleset)) {
-          Ruleset* r = (Ruleset*) stm;
-          if (isPrintable(r, style)) {
-            return true;
-          }
-        }
-        else if (typeid(*stm) == typeid(Supports_Block)) {
-          Supports_Block* f = (Supports_Block*) stm;
-          if (isPrintable(f, style)) {
-            return true;
-          }
-        }
-        else if (typeid(*stm) == typeid(Media_Block)) {
-          Media_Block* m = (Media_Block*) stm;
-          if (isPrintable(m, style)) {
-            return true;
-          }
-        }
-        else if (dynamic_cast<Has_Block*>(stm) && isPrintable(((Has_Block*)stm)->block(), style)) {
-          return true;
+        if (typeid(*stm) == typeid(At_Rule)) return true;
+        if (typeid(*stm) == typeid(Declaration)) return true;
+        if (Has_Block* child = dynamic_cast<Has_Block*>(stm)) {
+          if (isPrintable(child->block(), style)) return true;
         }
       }
       return false;
     }
-
-    bool isPrintable(Comment* c, Sass_Output_Style style)
-    {
-      // keep for uncompressed
-      if (style != COMPRESSED) {
-        return true;
-      }
-      // output style compressed
-      if (c->is_important()) {
-        return true;
-      }
-      // not printable
-      return false;
-    };
 
     bool isPrintable(Block* b, Sass_Output_Style style) {
       if (b == NULL) {
@@ -607,12 +581,17 @@ namespace Sass {
 
       for (size_t i = 0, L = b->length(); i < L; ++i) {
         Statement* stm = (*b)[i];
-        if (typeid(*stm) == typeid(Declaration) || typeid(*stm) == typeid(Directive)) {
+        if (typeid(*stm) == typeid(Declaration) || typeid(*stm) == typeid(At_Rule)) {
           return true;
         }
         else if (typeid(*stm) == typeid(Comment)) {
           Comment* c = (Comment*) stm;
-          if (isPrintable(c, style)) {
+          // keep for uncompressed
+          if (style != COMPRESSED) {
+            return true;
+          }
+          // output style compressed
+          if (c->is_important()) {
             return true;
           }
         }

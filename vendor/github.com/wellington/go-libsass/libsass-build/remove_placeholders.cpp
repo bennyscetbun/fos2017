@@ -68,13 +68,13 @@ namespace Sass {
     }
 
     void Remove_Placeholders::operator()(Media_Block* m) {
-        operator()(m->block());
-    }
-    void Remove_Placeholders::operator()(Supports_Block* m) {
-        operator()(m->block());
+        Block* b = m->block();
+        for (size_t i = 0, L = b->length(); i < L; ++i) {
+            if ((*b)[i]) (*b)[i]->perform(this);
+        }
     }
 
-    void Remove_Placeholders::operator()(Directive* a) {
+    void Remove_Placeholders::operator()(At_Rule* a) {
         if (a->block()) a->block()->perform(this);
     }
 
