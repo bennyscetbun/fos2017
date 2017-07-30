@@ -21,6 +21,15 @@
 </table>
 <script>
     $(document).ready(function() {
-    $('#userlist').DataTable();
+    $('#userlist').DataTable(
+        {
+            'columns'           : [
+                null,   // product code
+                null,
+                null,   // description
+                { 'searchable': false }
+            ]
+        }
+    );
 } );
 </script>
