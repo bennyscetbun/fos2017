@@ -1,10 +1,9 @@
 {{define "pagetitle"}} Index{{end}}
 
-
-{{$loggedin := .loggedin}} {{if $loggedin}}
 <div class="row">
 	<img src="assets/fos2017.png" alt="fos2017 logo" class="img-responsive center-block" />
 </div>
+{{$loggedin := .loggedin}} {{if $loggedin}}
  <div class="row">
     <div class="col-md-offset-1 col-md-10">
         <h1 class="text-center" >Avant d'aller plus loin, vous devez avoir une photo prête à télécharger et connaître votre numéro de sécu.</h1>

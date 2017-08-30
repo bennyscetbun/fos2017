@@ -370,6 +370,11 @@ func makePDF(userInfo *UserInfo) ([]byte, error) {
 	y = writeUnderFct("Numero Secu", userInfo.HealthNumber, y)
 	y = writeUnderFct("Adresse", fmt.Sprintf("%s %s %s", userInfo.Address, userInfo.CP, userInfo.Town), y)
 	y = writeUnderFct("Email", userInfo.ID, y)
+	facebook := ""
+	if userInfo.Facebook != nil {
+		facebook = *userInfo.Facebook
+	}
+	y = writeUnderFct("Facebook", facebook, y)
 	y = writeUnderFct("Tshirt", userInfo.TShirt, y)
 	y += 5
 	pdf.SetFont("Arial", "B", 8)
