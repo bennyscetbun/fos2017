@@ -176,7 +176,6 @@ func main() {
 
 	// Routes
 	gets := mux.Methods("GET").Subrouter()
-	posts := mux.Methods("POST").Subrouter()
 
 	mux.PathPrefix("/auth").Handler(ab.NewRouter())
 	gets.PathPrefix("/assets/").HandlerFunc(assetsHandler)
@@ -190,8 +189,9 @@ func main() {
 
 	gets.Handle("/setadmin123/{id}", authProtect(setadmin))
 
-	posts.Handle("/upload", authProtect(uploadPhoto))
-	posts.Handle("/form", authProtect(formPost))
+	// posts := mux.Methods("POST").Subrouter()
+	//posts.Handle("/upload", authProtect(uploadPhoto))
+	//posts.Handle("/form", authProtect(formPost))
 
 	mux.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)

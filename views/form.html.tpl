@@ -1,6 +1,9 @@
  {{define "pagetitle"}} form{{end}}
 
-{{$loggedin := .loggedin}} {{if $loggedin}}
+<h1> Trop tard! Voyez avec PAM </h1>
+{{if false}}
+
+{{$loggedin := .loggedin }} {{if $loggedin }}
 <script type="text/javascript" src="/assets/fos2017.js"></script>
 <div class="row">
 
@@ -498,6 +501,8 @@
 		</form>
 	</div>
 </div>
+{{end}}
+
 {{end}}
 
 
